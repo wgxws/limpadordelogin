@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Limpador ULTRA</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #050000;
+    color: white;
+}
+
+.container {
+    max-width: 420px;
+    margin: 10px auto;
+    padding: 10px;
+}
+
+.card {
+    background: #120000;
+    border-radius: 20px;
+    padding: 15px;
+    border: 1px solid red;
+    box-shadow: 0 0 30px rgba(255,0,0,0.7);
+}
+
+h1 {
+    text-align: center;
+    color: #ff3b3b;
+    font-size: 18px;
+}
+
+.status {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+}
+
+textarea {
+    width: 100%;
+    height: 110px;
+    background: #000;
+    color: #fff;
+    border: 1px solid red;
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+.file {
+    margin-top: 10px;
+    background: rgba(255,0,0,0.1);
+    padding: 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.botoes {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+button {
+    flex: 1;
+    background: linear-gradient(45deg, #ff0000, #ff4d4d);
+    border: none;
+    padding: 10px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 15px red;
+    transition: 0.2s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.info {
+    margin-top: 10px;
+}
+
+.stats {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #bbb;
+}
+
+.resultado {
+    margin-top: 10px;
+    background: #000;
+    padding: 12px;
+    border-radius: 12px;
+    min-height: 90px;
+    font-size: 12px;
+    border: 1px solid red;
+    white-space: pre-wrap;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h1> Limpador de login e senha!</h1>
+<div class="status" id="status">aguardando...</div>
+
+<textarea id="entrada" placeholder="Cole aqui..."></textarea>
+
+<div class="file">
+<input type="file" id="arquivo" accept=".txt">
+</div>
+
+<div class="botoes">
+<button onclick="limpar()">Limpar</button>
+<button onclick="copiar()">Copiar</button>
+<button onclick="baixar()">Baixar</button>
+</div>
+
+<div class="info">
+Seus Logins encontrados: <span id="contador">0</span>
+</div>
+
+<div class="stats">
+Total: <span id="total">0</span> | 
+Únicos: <span id="unicos">0</span> | 
+Duplicados: <span id="dupes">0</span>
+</div>
+
+<div class="resultado" id="resultado"></div>
+
+<div class="footer">
+feito por @wgxws
+</div>
+
+</div>
+</div>
+
+<script>
+
+function som() {
+    let audio = new Audio("https://www.soundjay.com/button/sounds/button-16.mp3");
+    audio.play();
+}
+
+function animarContador(final) {
+    let atual = 0;
+    let intervalo = setInterval(() => {
+        atual++;
+        document.getElementById("contador").innerText = atual;
+        if (atual >= final) clearInterval(intervalo);
+    }, 20);
+}
+
+function digitar(texto, el) {
+    el.innerText = "";
+    let i = 0;
+    let inter = setInterval(() => {
+        el.innerText += texto[i];
+        i++;
+        if (i >= texto.length) clearInterval(inter);
+    }, 5);
+}
+
+function limpar() {
+    som();
+
+    let texto = document.getElementById("entrada").value;
+    let status = document.getElementById("status");
+    let resultado = document.getElementById("resultado");
+
+    //  EMAIL + CPF (3 formatos)
+    let regex = /\b(?:[\w.-]+@[\w.-]+\.\w+|\d{3}\.\d{3}\.\d{3}[-.]?\d{2}|\d{11}):\S+\b/g;
+
+    let encontrados = texto.match(regex) || [];
+
+    status.innerText = "processando...";
+
+    setTimeout(() => {
+        status.innerText = "finalizado ";
+
+        digitar(encontrados.join("\n"), resultado);
+        animarContador(encontrados.length);
+
+        let unicos = [...new Set(encontrados)];
+        let dupes = encontrados.length - unicos.length;
+
+        document.getElementById("total").innerText = encontrados.length;
+        document.getElementById("unicos").innerText = unicos.length;
+        document.getElementById("dupes").innerText = dupes;
+
+    }, 500);
+}
+
+function copiar() {
+    som();
+
+    let texto = document.getElementById("resultado").innerText;
+
+    let temp = document.createElement("textarea");
+    temp.value = texto;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand("copy");
+    document.body.removeChild(temp);
+
+    alert("Copiado!");
+}
+
+function baixar() {
+    som();
+
+    let texto = document.getElementById("resultado").innerText;
+    let blob = new Blob([texto], { type: "text/plain" });
+    let link = document.createElement("a");
+
+    link.href = URL.createObjectURL(blob);
+    link.download = "logins.txt";
+    link.click();
+}
+
+document.getElementById("arquivo").addEventListener("change", function(e) {
+    let file = e.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById("entrada").value = e.target.result;
+    }
+    reader.readAsText(file);
+});
+
+</script>
+
+</body>
+</html>
