@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Limpador ULTRA</title>
 
@@ -75,11 +76,6 @@ button {
     color: white;
     font-weight: bold;
     box-shadow: 0 0 15px red;
-    transition: 0.2s;
-}
-
-button:active {
-    transform: scale(0.95);
 }
 
 .info {
@@ -117,7 +113,7 @@ button:active {
 <div class="container">
 <div class="card">
 
-<h1> Limpador de login e senha!</h1>
+<h1>🔴 Limpador de login e senha!</h1>
 <div class="status" id="status">aguardando...</div>
 
 <textarea id="entrada" placeholder="Cole aqui..."></textarea>
@@ -138,14 +134,14 @@ Seus Logins encontrados: <span id="contador">0</span>
 
 <div class="stats">
 Total: <span id="total">0</span> | 
-�nicos: <span id="unicos">0</span> | 
+&Uacute;nicos: <span id="unicos">0</span> | 
 Duplicados: <span id="dupes">0</span>
 </div>
 
 <div class="resultado" id="resultado"></div>
 
 <div class="footer">
-feito por @wgxws
+Feito por @wgxws
 </div>
 
 </div>
@@ -153,49 +149,22 @@ feito por @wgxws
 
 <script>
 
-function som() {
-    let audio = new Audio("https://www.soundjay.com/button/sounds/button-16.mp3");
-    audio.play();
-}
-
-function animarContador(final) {
-    let atual = 0;
-    let intervalo = setInterval(() => {
-        atual++;
-        document.getElementById("contador").innerText = atual;
-        if (atual >= final) clearInterval(intervalo);
-    }, 20);
-}
-
-function digitar(texto, el) {
-    el.innerText = "";
-    let i = 0;
-    let inter = setInterval(() => {
-        el.innerText += texto[i];
-        i++;
-        if (i >= texto.length) clearInterval(inter);
-    }, 5);
-}
-
 function limpar() {
-    som();
-
     let texto = document.getElementById("entrada").value;
     let status = document.getElementById("status");
     let resultado = document.getElementById("resultado");
 
-    //  EMAIL + CPF (3 formatos)
-    let regex = /\b(?:[\w.-]+@[\w.-]+\.\w+|\d{3}\.\d{3}\.\d{3}[-.]?\d{2}|\d{11}):\S+\b/g;
-
+    let regex = /\b[\w.-]+@[\w.-]+\.\w+:\S+\b/g;
     let encontrados = texto.match(regex) || [];
 
     status.innerText = "processando...";
 
     setTimeout(() => {
-        status.innerText = "finalizado ";
+        status.innerText = "finalizado ✔";
 
-        digitar(encontrados.join("\n"), resultado);
-        animarContador(encontrados.length);
+        resultado.innerText = encontrados.join("\n");
+
+        document.getElementById("contador").innerText = encontrados.length;
 
         let unicos = [...new Set(encontrados)];
         let dupes = encontrados.length - unicos.length;
@@ -204,12 +173,10 @@ function limpar() {
         document.getElementById("unicos").innerText = unicos.length;
         document.getElementById("dupes").innerText = dupes;
 
-    }, 500);
+    }, 300);
 }
 
 function copiar() {
-    som();
-
     let texto = document.getElementById("resultado").innerText;
 
     let temp = document.createElement("textarea");
@@ -223,12 +190,10 @@ function copiar() {
 }
 
 function baixar() {
-    som();
-
     let texto = document.getElementById("resultado").innerText;
-    let blob = new Blob([texto], { type: "text/plain" });
-    let link = document.createElement("a");
+    let blob = new Blob([texto], { type: "text/plain;charset=utf-8;" });
 
+    let link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "logins.txt";
     link.click();
@@ -242,7 +207,7 @@ document.getElementById("arquivo").addEventListener("change", function(e) {
     reader.onload = function(e) {
         document.getElementById("entrada").value = e.target.result;
     }
-    reader.readAsText(file);
+    reader.readAsText(file, "UTF-8");
 });
 
 </script>
