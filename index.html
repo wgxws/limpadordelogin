@@ -113,7 +113,7 @@ button {
 <div class="container">
 <div class="card">
 
-<h1>ðŸ”´ Limpador de login e senha!</h1>
+<h1>&#128308; Limpador de login e senha!</h1>
 <div class="status" id="status">aguardando...</div>
 
 <textarea id="entrada" placeholder="Cole aqui..."></textarea>
@@ -134,7 +134,7 @@ Seus Logins encontrados: <span id="contador">0</span>
 
 <div class="stats">
 Total: <span id="total">0</span> | 
-Ãšnicos: <span id="unicos">0</span> | 
+Únicos: <span id="unicos">0</span> | 
 Duplicados: <span id="dupes">0</span>
 </div>
 
@@ -161,7 +161,7 @@ function limpar() {
     status.innerText = "processando...";
 
     setTimeout(() => {
-        status.innerText = "finalizado âœ”";
+        status.innerHTML = "finalizado &#10004;";
 
         resultado.innerText = encontrados.join("\n");
 
