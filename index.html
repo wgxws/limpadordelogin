@@ -129,13 +129,13 @@ button {
 </div>
 
 <div class="info">
-Seus Logins encontrados: <span id="contador">0</span>
+Total encontrado: <span id="contador">0</span>
 </div>
 
 <div class="stats">
 Total: <span id="total">0</span> | 
 Únicos: <span id="unicos">0</span> | 
-Duplicados: <span id="dupes">0</span>
+Duplicados Removidos: <span id="dupes">0</span>
 </div>
 
 <div class="resultado" id="resultado"></div>
@@ -155,24 +155,34 @@ function limpar() {
     let resultado = document.getElementById("resultado");
 
     // REGEX CORRIGIDA
-    let regex = /[^\s:]+:(?!\d{1,2}:\d{2})[^\s:]+/g;
-    let encontrados = texto.match(regex) || [];
+    let regex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}|\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}):[^\s:]+/g;
+    let encontrados = (texto.match(regex) || [])
+    .map(l => l.trim())
+    .filter(l => l.includes(":") && !l.startsWith("http"));
 
     status.innerText = "processando...";
 
     setTimeout(() => {
         status.innerHTML = "finalizado &#10004;";
 
-        resultado.innerText = encontrados.join("\n");
+        let unicos = [...new Set(encontrados)];
+resultado.innerText = unicos.join("\n");
 
         document.getElementById("contador").innerText = encontrados.length;
 
-        let unicos = [...new Set(encontrados)];
-        let dupes = encontrados.length - unicos.length;
+        let removidos = encontrados.length - unicos.length;
 
-        document.getElementById("total").innerText = encontrados.length;
-        document.getElementById("unicos").innerText = unicos.length;
-        document.getElementById("dupes").innerText = dupes;
+document.getElementById("total").innerText = encontrados.length;
+let porcentagemRemovidos = encontrados.length > 0 
+    ? ((removidos / encontrados.length) * 100).toFixed(1) 
+    : 0;
+
+let porcentagemUnicos = encontrados.length > 0 
+    ? ((unicos.length / encontrados.length) * 100).toFixed(1) 
+    : 0;
+
+document.getElementById("dupes").innerText = `${removidos} (${porcentagemRemovidos}%)`;
+document.getElementById("unicos").innerText = `${unicos.length} (${porcentagemUnicos}%)`;
 
     }, 300);
 }
