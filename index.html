@@ -155,7 +155,7 @@ function limpar() {
     let resultado = document.getElementById("resultado");
 
     // REGEX CORRIGIDA
-    let regex = /[^\s:]+:[^\s:]*[A-Za-z@._-][^\s:]*/g;
+    let regex = /[^\s:]+:(?!\d{1,2}:\d{2})[^\s:]+/g;
     let encontrados = texto.match(regex) || [];
 
     status.innerText = "processando...";
